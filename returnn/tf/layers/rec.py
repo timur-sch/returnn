@@ -4296,6 +4296,27 @@ class GetRecAccumulatedOutputLayer(LayerBase):
     return subnet.layers[sub_layer].output
 
 
+class IterLayer(LayerBase):
+  """
+  This is supposed to be used inside a :class:`RecLayer`.
+  The input is supposed to be outside the rec layer (i.e. via ``base:``).
+  Uses tf.TensorArray and then unstack on the inputs to make it available per-frame.
+  This is an alternative to making some input to the rec layer,
+  such that the rec layer can have multiple inputs (as long as they have the same time dim).
+  """
+  # TODO:
+  #  I'm not really sure whether this layer is the best approach.
+  #  We could also introduce a new syntax, like ``base-iter:`` instead of ``base:`` to do that,
+  #    and then hide the logic inside RecLayer.
+  #  Another problem: As there is no recurrent dependency on this layer (its only input is outside),
+  #    it will be optimized out.
+  #    In the optimized-out case, it would not use tf.TensorArray but simply copy the input.
+  #    So then this is just equivalent to CopyLayer.
+  #    TODO Why does CopyLayer actually not work already?
+  #      See also the logic in get_input_moved_out inside _construct.
+  # TODO ...
+
+
 class BaseChoiceLayer(LayerBase):
   """
   This is a base-class for any layer which defines a new search choice,
